@@ -18,14 +18,15 @@ pub enum Command {
 
         /// Whether to run a "dry-run". If this flag is set, then no
         /// files will be written
+        #[clap(long)]
         dry_run: bool,
     },
 }
 
 impl Command {
-    pub fn execute(&self) -> Result<()> {
+    pub async fn execute(&self) -> Result<()> {
         match self {
-            Command::Install { dry_run, package } => install::Install::execute(package, dry_run),
+            Command::Install { dry_run, package } => install::Install::execute(package, dry_run).await,
         }
     }
 }

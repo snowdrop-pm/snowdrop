@@ -1,0 +1,1 @@
+pub const DEFAULT_PACKAGE_INDEX: &str = "";

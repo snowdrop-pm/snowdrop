@@ -9,6 +9,10 @@ edition = "2021"
 clap = { version = "4.0.32", features = ["derive"] }
 colored = "2.0.0"
 config = { version = "0.13.3", features = ["toml"] }
+directories = "4.0.1"
 miette = { version = "5.5.0", features = ["fancy"] }
+once_cell = "1.17.0"
+reqwest = "0.11.13"
 serde = { version = "1.0.152", features = ["derive"] }
+tokio = { version = "1.23.0", default-features = false, features = ["rt-multi-thread", "macros"] }
 toml = "0.5.10"
