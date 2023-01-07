@@ -11,7 +11,7 @@ impl Install {
         let index = config
             .get_string("package_index")
             .unwrap_or_else(|_| DEFAULT_PACKAGE_INDEX.to_string());
-        dbg!(index);
+        dbg!(index, dry_run);
 
         Ok(())
     }
