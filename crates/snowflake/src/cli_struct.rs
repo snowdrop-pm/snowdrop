@@ -9,7 +9,7 @@ pub struct Cli {
     pub command: Command,
 }
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Debug)]
 pub enum Command {
     /// Install a package.
     Install {
@@ -25,8 +25,11 @@ pub enum Command {
 
 impl Command {
     pub async fn execute(&self) -> Result<()> {
+        log::debug!("Command invoked: {:#?}", self);
         match self {
-            Command::Install { dry_run, package } => install::Install::execute(package, dry_run).await,
+            Command::Install { dry_run, package } => {
+                install::Install::execute(package, dry_run).await
+            }
         }
     }
 }
