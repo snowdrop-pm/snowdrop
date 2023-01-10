@@ -2,7 +2,7 @@
 name = "styled_env_logger"
 version = "0.1.0" # don't forget to update html_root_url
 description = "An updated version of `pretty-env-logger`"
-repository = "https://github.com/snowflakepm/snowflake"
+repository = "https://github.com/snowflakepm/snowflake/tree/main/crates/styled-env-logger"
 authors = ["Sean McArthur <sean@seanmonstar>"]
 license = "MIT/Apache-2.0"
 categories = ["development-tools::debugging"]
