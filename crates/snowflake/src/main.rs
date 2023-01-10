@@ -17,8 +17,8 @@ use cli_struct::Cli;
 async fn main() -> Result<()> {
     styled_env_logger::formatted_builder()
         .filter(None, LevelFilter::Info)
-        .parse_filters(&env::var("RUST_LOG").unwrap_or(String::from("INFO")))
-        .parse_write_style(&env::var("RUST_LOG_STYLE").unwrap_or(String::from("auto")))
+        .parse_filters(&env::var("RUST_LOG").unwrap_or_else(|_| String::from("INFO")))
+        .parse_write_style(&env::var("RUST_LOG_STYLE").unwrap_or_else(|_| String::from("auto")))
         .try_init()
         .into_diagnostic()?;
 
