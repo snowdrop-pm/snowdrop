@@ -1258,7 +1258,7 @@ dependencies = [
  "once_cell",
  "reqwest",
  "serde",
- "styled_env_logger 0.1.0",
+ "styled_env_logger 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokio",
  "toml",
 ]
@@ -1281,9 +1281,7 @@ checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
 
 [[package]]
 name = "styled_env_logger"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "369145a7d1283382d760988e59f6d5d4f841a3847a7707e4baf460e4f982eb3d"
+version = "0.1.1"
 dependencies = [
  "env_logger",
  "log",
@@ -1292,6 +1290,8 @@ dependencies = [
 [[package]]
 name = "styled_env_logger"
 version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "59beb34306558a2c65839f0d92b0a2785e54eb789d1f86a9d1f0b427568ed13c"
 dependencies = [
  "env_logger",
  "log",
