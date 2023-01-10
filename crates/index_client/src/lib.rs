@@ -28,8 +28,12 @@ pub enum IndexClientError {
     PackageNotFound,
 }
 
-#[derive(Deserialize)]
-pub struct PackageMetadata;
+#[derive(Deserialize, Debug)]
+pub struct PackageMetadata {
+    pub name: String,
+    pub pretty_name: String,
+    pub repo: [String; 2],
+}
 
 impl IndexClient {
     pub fn from_index_and_user_version(
@@ -62,9 +66,8 @@ impl IndexClient {
         if let Err(err) = http_response.error_for_status_ref() {
             if err.status() == Some(StatusCode::NOT_FOUND) {
                 return Err(IndexClientError::PackageNotFound);
-            } else {
-                return Err(IndexClientError::StatusCodeNotOk(err.status().unwrap()));
             }
+            return Err(IndexClientError::StatusCodeNotOk(err.status().unwrap()));
         }
 
         match http_response.json::<PackageMetadata>().await {

@@ -1,7 +1,7 @@
 use crate::commands::*;
 use clap::{Parser, Subcommand};
+use log::debug;
 use miette::Result;
-
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
@@ -25,11 +25,9 @@ pub enum Command {
 
 impl Command {
     pub async fn execute(&self) -> Result<()> {
-        log::debug!("Command invoked: {:#?}", self);
+        debug!("Command invoked: {:#?}", self);
         match self {
-            Command::Install { dry_run, package } => {
-                install::Install::execute(package, dry_run).await
-            }
+            Self::Install { dry_run, package } => install::Install::execute(package, dry_run).await,
         }
     }
 }
