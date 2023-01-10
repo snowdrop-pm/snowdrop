@@ -15,7 +15,7 @@ use cli_struct::Cli;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    pretty_env_logger::formatted_builder()
+    styled_env_logger::formatted_builder()
         .filter(None, LevelFilter::Info)
         .parse_filters(&env::var("RUST_LOG").unwrap_or(String::from("INFO")))
         .parse_write_style(&env::var("RUST_LOG_STYLE").unwrap_or(String::from("auto")))
