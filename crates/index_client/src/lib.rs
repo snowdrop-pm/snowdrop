@@ -1,4 +1,6 @@
+use log::debug;
 use miette::{Diagnostic, Result};
+use octocrab::models::repos::Release;
 use reqwest::{Client, StatusCode};
 use serde::Deserialize;
 use thiserror::Error;
@@ -26,13 +28,9 @@ pub enum IndexClientError {
 
     #[error("Package not found")]
     PackageNotFound,
-}
 
-#[derive(Deserialize, Debug)]
-pub struct PackageMetadata {
-    pub name: String,
-    pub pretty_name: String,
-    pub repo: [String; 2],
+    #[error("Failed to get latest GitHub Release for repo `{0}/{1}`")]
+    GitHubReleaseError(String, String, octocrab::Error),
 }
 
 impl IndexClient {
@@ -65,6 +63,7 @@ impl IndexClient {
 
         if let Err(err) = http_response.error_for_status_ref() {
             if err.status() == Some(StatusCode::NOT_FOUND) {
+                debug!("The index server returned a 404, quitting...");
                 return Err(IndexClientError::PackageNotFound);
             }
             return Err(IndexClientError::StatusCodeNotOk(err.status().unwrap()));
@@ -73,6 +72,33 @@ impl IndexClient {
         match http_response.json::<PackageMetadata>().await {
             Ok(package_metadata) => Ok(package_metadata),
             Err(_) => Err(IndexClientError::JsonParsingError),
+        }
+    }
+}
+
+#[derive(Deserialize, Debug)]
+pub struct PackageMetadata {
+    pub name: String,
+    pub pretty_name: String,
+    pub repo: [String; 2],
+}
+
+impl PackageMetadata {
+    pub async fn get_latest_release(&self) -> Result<Release, IndexClientError> {
+        let [owner, repo] = &self.repo;
+
+        match octocrab::instance()
+            .repos(owner, repo)
+            .releases()
+            .get_latest()
+            .await
+        {
+            Ok(release) => Ok(release),
+            Err(err) => Err(IndexClientError::GitHubReleaseError(
+                owner.to_string(),
+                repo.to_string(),
+                err,
+            )),
         }
     }
 }

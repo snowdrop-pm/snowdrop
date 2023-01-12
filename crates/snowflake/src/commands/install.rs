@@ -22,11 +22,19 @@ impl Install {
         let package_metadata = index_client.get_package(package).await?;
         debug!("Fetched package metadata: {:#?}", package_metadata);
 
-        let [author, repo] = package_metadata.repo;
+        let [owner, repo] = &package_metadata.repo;
         info!(
             "Installing {package_name} {repo_info}",
             package_name = package.bold(),
-            repo_info = format!("(repo: {author}/{repo})").black().bold()
+            repo_info = format!("(repo: {owner}/{repo})").black().bold()
+        );
+
+        let release = package_metadata.get_latest_release().await?;
+        let release_id = release.id;
+        info!(
+            "Latest release is {} {}",
+            release.name.unwrap_or("unspecified".to_string()).bold(),
+            format!("(release ID: {release_id})").black().bold()
         );
 
         Ok(())
