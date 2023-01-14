@@ -1,9 +1,13 @@
+use std::num::ParseIntError;
+
 use log::debug;
 use miette::{Diagnostic, Result};
 use octocrab::models::repos::Release;
 use reqwest::{Client, StatusCode};
 use serde::Deserialize;
 use thiserror::Error;
+
+pub const CURRENT_PROTOCOL_VERSION: u8 = 2;
 
 pub struct IndexClient {
     client: Client,
@@ -12,16 +16,12 @@ pub struct IndexClient {
 
 #[derive(Error, Diagnostic, Debug)]
 pub enum IndexClientError {
-    #[error("Failed to send request to the index server")]
+    #[error("An error occured while sending or receiving a request from the index server")]
     RequestError(#[from] reqwest::Error),
 
     #[error("The index server returned a status code of `{0}`")]
     #[diagnostic(help("This is very likely a problem with the index server, try contacting the server administrator"))]
     StatusCodeNotOk(StatusCode),
-
-    #[error("Failed to parse JSON returned by index server")]
-    #[diagnostic(help("This is a bug. It might be a Snowflake bug, or it might be a bug with the index server, but it's a bug and should definitely be reported."))]
-    JsonParsingError,
 
     #[error("Failed to initialize TLS backend")]
     TlsBackendInitError,
@@ -31,10 +31,17 @@ pub enum IndexClientError {
 
     #[error("Failed to get latest GitHub Release for repo `{0}/{1}`")]
     GitHubReleaseError(String, String, octocrab::Error),
+
+    #[error("Expected protocol version {0}, got version {1}")]
+    #[diagnostic(help("Try updating Snowflake to the latest version"))]
+    ProtocolVersionMismatch(u8, u8),
+
+    #[error("Failed to parse version")]
+    ProtocolVersionParseError(#[from] ParseIntError),
 }
 
 impl IndexClient {
-    pub fn from_index_and_user_version(
+    pub async fn from_index_and_user_version(
         index: String,
         user_version: &str,
     ) -> Result<Self, IndexClientError> {
@@ -46,6 +53,21 @@ impl IndexClient {
             .build() else {
                 return Err(IndexClientError::TlsBackendInitError)
             };
+        let proto_version = client
+            .get(format!("{index}/proto_version"))
+            .send()
+            .await?
+            .text()
+            .await?
+            .parse()?;
+
+        if proto_version != CURRENT_PROTOCOL_VERSION {
+            return Err(IndexClientError::ProtocolVersionMismatch(
+                CURRENT_PROTOCOL_VERSION,
+                proto_version,
+            ));
+        }
+
         Ok(Self { client, index })
     }
 
@@ -69,10 +91,7 @@ impl IndexClient {
             return Err(IndexClientError::StatusCodeNotOk(err.status().unwrap()));
         }
 
-        match http_response.json::<PackageMetadata>().await {
-            Ok(package_metadata) => Ok(package_metadata),
-            Err(_) => Err(IndexClientError::JsonParsingError),
-        }
+        Ok(http_response.json::<PackageMetadata>().await?)
     }
 }
 

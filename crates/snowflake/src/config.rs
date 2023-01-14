@@ -1,6 +1,7 @@
-use crate::dirs::get_project_dirs;
 use config::Config;
 use miette::{IntoDiagnostic, Result, WrapErr};
+
+use crate::dirs::get_project_dirs;
 
 pub fn get_config() -> Result<Config> {
     let settings = Config::builder()

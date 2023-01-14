@@ -1,7 +1,8 @@
-use crate::commands::*;
 use clap::{Parser, Subcommand};
 use log::debug;
 use miette::Result;
+
+use crate::commands::*;
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {

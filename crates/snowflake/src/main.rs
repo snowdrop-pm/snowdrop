@@ -1,9 +1,10 @@
 #![deny(missing_docs)]
 //! A package manager for GitHub Releases
+use std::env;
+
 use clap::Parser;
 use log::LevelFilter;
 use miette::{IntoDiagnostic, Result};
-use std::env;
 
 mod cli_struct;
 mod commands;
