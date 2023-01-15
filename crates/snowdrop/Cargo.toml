@@ -2,7 +2,7 @@
 name = "snowdrop"
 description = "A package manager for GitHub Releases."
 repository = "https://github.com/snowdroppm/snowdrop"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "Apache-2.0"
 
@@ -13,7 +13,7 @@ clap = { version = "4.0.32", features = ["derive"] }
 colored = "2.0.0"
 config = { version = "0.13.3", features = ["toml"] }
 directories = "4.0.1"
-index_client = { path = "../snowdrop_index_client", package = "snowdrop_index_client", version = "0.2" }
+index_client = { path = "../snowdrop_index_client", package = "snowdrop_index_client", version = "0.4" }
 log = "0.4.17"
 miette = { version = "5.5.0", features = ["fancy"] }
 once_cell = "1.17.0"
@@ -23,5 +23,9 @@ serde = { version = "1.0.152", features = ["derive"] }
 tokio = { version = "1.23.0", default-features = false, features = [
     "rt-multi-thread",
     "macros",
+    "fs"
 ] }
 toml = "0.5.10"
+dialoguer = "0.10.3"
+regex = "1.7.1"
+rust-fuzzy-search = "0.1.1"

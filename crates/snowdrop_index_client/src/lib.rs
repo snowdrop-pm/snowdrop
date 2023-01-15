@@ -2,7 +2,7 @@ use std::num::ParseIntError;
 
 use log::debug;
 use miette::{Diagnostic, Result};
-use octocrab::models::repos::Release;
+use octocrab::{models::repos::Release, Octocrab};
 use reqwest::{Client, StatusCode};
 use serde::Deserialize;
 use thiserror::Error;
@@ -12,6 +12,7 @@ pub const CURRENT_PROTOCOL_VERSION: u8 = 2;
 pub struct IndexClient {
     client: Client,
     pub index: String,
+    pat: Option<String>,
 }
 
 #[derive(Error, Diagnostic, Debug)]
@@ -31,8 +32,8 @@ pub enum IndexClientError {
     #[error("Package not found")]
     PackageNotFound,
 
-    #[error("Failed to get latest GitHub Release for repo `{0}/{1}`")]
-    GitHubReleaseError(String, String, octocrab::Error),
+    #[error("Failed to get latest GitHub Release for repo")]
+    GitHubReleaseError(#[from] octocrab::Error),
 
     #[error("Expected protocol version {0}, got version {1}")]
     #[diagnostic(help("Try updating Snowdrop to the latest version"))]
@@ -40,6 +41,10 @@ pub enum IndexClientError {
 
     #[error("Failed to parse protocol version")]
     ProtocolVersionParseError(#[from] ParseIntError),
+
+    #[error("No GitHub PAT specified")]
+    #[diagnostic(help("Run `snowflake auth` to set this up"))]
+    NoPat,
 }
 
 impl IndexClient {
@@ -70,13 +75,26 @@ impl IndexClient {
             ));
         }
 
-        Ok(Self { client, index })
+        Ok(Self {
+            client,
+            index,
+            pat: None,
+        })
+    }
+
+    pub fn with_pat(&mut self, pat: Option<String>) -> &mut IndexClient {
+        self.pat = pat;
+        self
     }
 
     pub async fn get_package(&self, name: &str) -> Result<PackageMetadata, IndexClientError> {
         let index = &self.index;
         let endpoint = format!("{index}/packages/{name}.json");
         log::debug!("Index server endpoint for package `{name}` is `{endpoint}`");
+
+        if self.pat.is_none() {
+            return Err(IndexClientError::NoPat);
+        }
 
         let http_response = self
             .client
@@ -93,7 +111,25 @@ impl IndexClient {
             return Err(IndexClientError::StatusCodeNotOk(err.status().unwrap()));
         }
 
-        Ok(http_response.json::<PackageMetadata>().await?)
+        let mut metadata = http_response.json::<PackageMetadata>().await?;
+        metadata.pat(self.pat.clone());
+        Ok(metadata)
+    }
+
+    pub async fn get_names(&self) -> Result<Vec<String>> {
+        let index = &self.index;
+        let endpoint = format!("{index}/names.json");
+        log::debug!("Index server endpoint for package name list is `{endpoint}`");
+
+        Ok(self
+            .client
+            .get(endpoint)
+            .send()
+            .await
+            .map_err(IndexClientError::RequestError)?
+            .json::<Vec<String>>()
+            .await
+            .map_err(IndexClientError::RequestError)?)
     }
 }
 
@@ -102,19 +138,26 @@ pub struct PackageMetadata {
     pub name: String,
     pub pretty_name: String,
     pub repo: [String; 2],
+    pat: Option<String>,
 }
 
 impl PackageMetadata {
     pub async fn get_latest_release(&self) -> Result<Release, IndexClientError> {
         let [owner, repo] = &self.repo;
 
-        match octocrab::instance().repos(owner, repo).releases().get_latest().await {
-            Ok(release) => Ok(release),
-            Err(err) => Err(IndexClientError::GitHubReleaseError(
-                owner.to_string(),
-                repo.to_string(),
-                err,
-            )),
-        }
+        Ok(octocrab(&self.pat.clone().unwrap())?
+            .repos(owner, repo)
+            .releases()
+            .get_latest()
+            .await?)
     }
+
+    fn pat(&mut self, pat: Option<String>) -> &mut Self {
+        self.pat = pat;
+        self
+    }
+}
+
+fn octocrab(pat: &String) -> Result<Octocrab, IndexClientError> {
+    Ok(Octocrab::builder().personal_token(pat.to_string()).build()?)
 }

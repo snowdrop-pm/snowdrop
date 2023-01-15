@@ -1,9 +1,10 @@
 use colored::Colorize;
+use dialoguer::Confirm;
 use index_client::IndexClient;
 use log::{debug, info};
-use miette::Result;
+use miette::{IntoDiagnostic, Report, Result};
 
-use crate::config::get_config;
+use crate::{config::get_config, defaults::theme};
 
 pub struct Install;
 
@@ -11,26 +12,15 @@ impl Install {
     pub async fn execute(package: &str, _dry_run: &bool) -> Result<()> {
         let config = get_config()?;
 
-        let index_client = IndexClient::from_index_and_user_version(config.index, env!("CARGO_PKG_VERSION")).await?;
+        let mut index_client =
+            IndexClient::from_index_and_user_version(config.index, env!("CARGO_PKG_VERSION")).await?;
+        let index_client = index_client.with_pat(config.pat);
 
         info!("Fetching package metadata for package {}.", package.bold());
         let package_metadata = index_client.get_package(package).await?;
         debug!("Fetched package metadata: {:#?}", package_metadata);
 
-        let [owner, repo] = &package_metadata.repo;
-        info!(
-            "Installing {package_name} {repo_info}",
-            package_name = package.bold(),
-            repo_info = format!("(repo: {owner}/{repo})").black().bold()
-        );
-
         let release = package_metadata.get_latest_release().await?;
-        let release_id = release.id;
-        info!(
-            "Latest release is {} {}",
-            release.name.unwrap_or_else(|| "unspecified".to_string()).bold(),
-            format!("(release ID: {release_id})").black().bold()
-        );
 
         debug!("{}", "===============BEGIN ASSET LIST===============".blue().bold());
         debug!("This information is logged to help debug errors made by the file selection algorithm.");
@@ -45,6 +35,19 @@ impl Install {
             )
         }
         debug!("{}", "================END ASSET LIST================".blue().bold());
+
+        let should_install = Confirm::with_theme(&theme())
+            .with_prompt(format!(
+                "Install `{package}` {}?",
+                release.name.unwrap_or_else(|| "(version unspecified)".to_string())
+            ))
+            .default(false)
+            .interact()
+            .into_diagnostic()?;
+
+        if !should_install {
+            return Err(Report::msg("User aborted operation"));
+        }
 
         Ok(())
     }
