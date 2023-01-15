@@ -33,7 +33,7 @@ pub enum IndexClientError {
     GitHubReleaseError(String, String, octocrab::Error),
 
     #[error("Expected protocol version {0}, got version {1}")]
-    #[diagnostic(help("Try updating Snowflake to the latest version"))]
+    #[diagnostic(help("Try updating Snowdrop to the latest version"))]
     ProtocolVersionMismatch(u8, u8),
 
     #[error("Failed to parse version")]
@@ -47,7 +47,7 @@ impl IndexClient {
     ) -> Result<Self, IndexClientError> {
         let Ok(client) = Client::builder()
             .user_agent(format!(
-                "SnowflakeIndexClient/{} SnowflakeCLI/{user_version}",
+                "SnowdropIndexClient/{} SnowdropCLI/{user_version}",
                 env!("CARGO_PKG_VERSION")
             ))
             .build() else {

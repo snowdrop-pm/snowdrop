@@ -1549,7 +1549,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "snowflake"
+name = "snowdrop"
 version = "0.1.0"
 dependencies = [
  "clap",
@@ -1561,14 +1561,14 @@ dependencies = [
  "once_cell",
  "reqwest",
  "serde",
- "snowflake_index_client",
- "styled_env_logger 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "snowdrop_index_client",
+ "styled_env_logger 0.1.1",
  "tokio",
  "toml",
 ]
 
 [[package]]
-name = "snowflake_index_client"
+name = "snowdrop_index_client"
 version = "0.2.0"
 dependencies = [
  "log",
@@ -1604,6 +1604,8 @@ checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
 [[package]]
 name = "styled_env_logger"
 version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "59beb34306558a2c65839f0d92b0a2785e54eb789d1f86a9d1f0b427568ed13c"
 dependencies = [
  "env_logger",
  "log",
@@ -1611,9 +1613,7 @@ dependencies = [
 
 [[package]]
 name = "styled_env_logger"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "59beb34306558a2c65839f0d92b0a2785e54eb789d1f86a9d1f0b427568ed13c"
+version = "0.1.2"
 dependencies = [
  "env_logger",
  "log",

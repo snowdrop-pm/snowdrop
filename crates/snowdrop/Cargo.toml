@@ -1,5 +1,5 @@
 [package]
-name = "snowflake"
+name = "snowdrop"
 version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
@@ -11,7 +11,7 @@ clap = { version = "4.0.32", features = ["derive"] }
 colored = "2.0.0"
 config = { version = "0.13.3", features = ["toml"] }
 directories = "4.0.1"
-index_client = { path = "../snowflake_index_client", package = "snowflake_index_client" }
+index_client = { path = "../snowdrop_index_client", package = "snowdrop_index_client" }
 log = "0.4.17"
 miette = { version = "5.5.0", features = ["fancy"] }
 once_cell = "1.17.0"

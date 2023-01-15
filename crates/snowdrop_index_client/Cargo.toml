@@ -1,6 +1,6 @@
 [package]
-name = "snowflake_index_client"
-description = "The Snowflake index client"
+name = "snowdrop_index_client"
+description = "The Snowdrop index client"
 version = "0.2.0"
 edition = "2021"
 license = "Apache-2.0"
