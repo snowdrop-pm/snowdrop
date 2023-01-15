@@ -41,8 +41,10 @@ pub extern crate env_logger;
 
 extern crate log;
 
-use std::fmt;
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::{
+    fmt,
+    sync::atomic::{AtomicUsize, Ordering},
+};
 
 use env_logger::{
     fmt::{Color, Style, StyledValue},
@@ -143,9 +145,7 @@ pub fn try_init_custom_env(environment_variable_name: &str) -> Result<(), log::S
 /// # Errors
 ///
 /// This function fails to set the global logger if one has already been set.
-pub fn try_init_timed_custom_env(
-    environment_variable_name: &str,
-) -> Result<(), log::SetLoggerError> {
+pub fn try_init_timed_custom_env(environment_variable_name: &str) -> Result<(), log::SetLoggerError> {
     let mut builder = formatted_timed_builder();
 
     if let Ok(s) = ::std::env::var(environment_variable_name) {

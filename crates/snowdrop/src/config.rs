@@ -1,12 +1,10 @@
 use miette::{IntoDiagnostic, Result, WrapErr};
 use serde::Deserialize;
 
-use crate::dirs::get_project_dirs;
-
-use crate::defaults::default_package_index;
+use crate::{defaults::default_package_index, dirs::get_project_dirs};
 
 pub fn get_config() -> Result<Config> {
-    let settings = config::Config::builder()
+    let config = config::Config::builder()
         .add_source(
             config::File::with_name(
                 get_project_dirs()?
@@ -17,7 +15,7 @@ pub fn get_config() -> Result<Config> {
             )
             .required(false),
         )
-        .add_source(config::Environment::with_prefix("SNOWFLAKE_"))
+        .add_source(config::Environment::with_prefix("SNOWDROP"))
         .build()
         .into_diagnostic()
         .wrap_err("failed to read config")?
@@ -25,7 +23,7 @@ pub fn get_config() -> Result<Config> {
         .into_diagnostic()
         .wrap_err("failed to deserialize config")?;
 
-    Ok(settings)
+    Ok(config)
 }
 
 #[derive(Deserialize)]

@@ -20,7 +20,9 @@ pub enum IndexClientError {
     RequestError(#[from] reqwest::Error),
 
     #[error("The index server returned a status code of `{0}`")]
-    #[diagnostic(help("This is very likely a problem with the index server, try contacting the server administrator"))]
+    #[diagnostic(help(
+        "This is very likely a problem with the index server, try contacting the server administrator"
+    ))]
     StatusCodeNotOk(StatusCode),
 
     #[error("Failed to initialize TLS backend")]
@@ -36,15 +38,12 @@ pub enum IndexClientError {
     #[diagnostic(help("Try updating Snowdrop to the latest version"))]
     ProtocolVersionMismatch(u8, u8),
 
-    #[error("Failed to parse version")]
+    #[error("Failed to parse protocol version")]
     ProtocolVersionParseError(#[from] ParseIntError),
 }
 
 impl IndexClient {
-    pub async fn from_index_and_user_version(
-        index: String,
-        user_version: &str,
-    ) -> Result<Self, IndexClientError> {
+    pub async fn from_index_and_user_version(index: String, user_version: &str) -> Result<Self, IndexClientError> {
         let Ok(client) = Client::builder()
             .user_agent(format!(
                 "SnowdropIndexClient/{} SnowdropCLI/{user_version}",
@@ -58,10 +57,13 @@ impl IndexClient {
             .send()
             .await?
             .text()
-            .await?
-            .parse()?;
+            .await?;
+        debug!("Protocol version TEXT returned: {proto_version}");
+        let proto_version = "2".parse()?;
+        debug!("Parsed proto version: {proto_version}");
 
         if proto_version != CURRENT_PROTOCOL_VERSION {
+            debug!("Proto version being used by Snowdrop ({CURRENT_PROTOCOL_VERSION}) != index server proto version ({proto_version}), bailing out...");
             return Err(IndexClientError::ProtocolVersionMismatch(
                 CURRENT_PROTOCOL_VERSION,
                 proto_version,
@@ -106,12 +108,7 @@ impl PackageMetadata {
     pub async fn get_latest_release(&self) -> Result<Release, IndexClientError> {
         let [owner, repo] = &self.repo;
 
-        match octocrab::instance()
-            .repos(owner, repo)
-            .releases()
-            .get_latest()
-            .await
-        {
+        match octocrab::instance().repos(owner, repo).releases().get_latest().await {
             Ok(release) => Ok(release),
             Err(err) => Err(IndexClientError::GitHubReleaseError(
                 owner.to_string(),

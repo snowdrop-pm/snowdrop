@@ -11,9 +11,7 @@ impl Install {
     pub async fn execute(package: &str, _dry_run: &bool) -> Result<()> {
         let config = get_config()?;
 
-        let index_client =
-            IndexClient::from_index_and_user_version(config.index, env!("CARGO_PKG_VERSION"))
-                .await?;
+        let index_client = IndexClient::from_index_and_user_version(config.index, env!("CARGO_PKG_VERSION")).await?;
 
         info!("Fetching package metadata for package {}.", package.bold());
         let package_metadata = index_client.get_package(package).await?;
@@ -30,22 +28,12 @@ impl Install {
         let release_id = release.id;
         info!(
             "Latest release is {} {}",
-            release
-                .name
-                .unwrap_or_else(|| "unspecified".to_string())
-                .bold(),
+            release.name.unwrap_or_else(|| "unspecified".to_string()).bold(),
             format!("(release ID: {release_id})").black().bold()
         );
 
-        debug!(
-            "{}",
-            "===============BEGIN ASSET LIST==============="
-                .blue()
-                .bold()
-        );
-        debug!(
-            "This information is logged to help debug errors made by the file selection algorithm."
-        );
+        debug!("{}", "===============BEGIN ASSET LIST===============".blue().bold());
+        debug!("This information is logged to help debug errors made by the file selection algorithm.");
         for asset in release.assets {
             debug!(
                 "{asset_id_section_marker} {} | {name_section_marker} {} | {size_section_marker} {} | {url_section_marker} {}",
@@ -56,12 +44,7 @@ impl Install {
                 url_section_marker = "Download URL:".bold(),
             )
         }
-        debug!(
-            "{}",
-            "================END ASSET LIST================"
-                .blue()
-                .bold()
-        );
+        debug!("{}", "================END ASSET LIST================".blue().bold());
 
         Ok(())
     }
