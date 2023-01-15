@@ -725,18 +725,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "index_client"
-version = "0.2.0"
-dependencies = [
- "log",
- "miette",
- "octocrab",
- "reqwest",
- "serde",
- "thiserror",
-]
-
-[[package]]
 name = "indexmap"
 version = "1.9.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1568,15 +1556,27 @@ dependencies = [
  "colored",
  "config",
  "directories",
- "index_client",
  "log",
  "miette",
  "once_cell",
  "reqwest",
  "serde",
+ "snowflake_index_client",
  "styled_env_logger 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokio",
  "toml",
+]
+
+[[package]]
+name = "snowflake_index_client"
+version = "0.2.0"
+dependencies = [
+ "log",
+ "miette",
+ "octocrab",
+ "reqwest",
+ "serde",
+ "thiserror",
 ]
 
 [[package]]

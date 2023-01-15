@@ -4,19 +4,16 @@ use log::{debug, info};
 use miette::Result;
 
 use crate::config::get_config;
-use crate::defaults::DEFAULT_PACKAGE_INDEX;
 
 pub struct Install;
 
 impl Install {
     pub async fn execute(package: &str, _dry_run: &bool) -> Result<()> {
         let config = get_config()?;
-        let index = config
-            .get_string("package_index")
-            .unwrap_or_else(|_| DEFAULT_PACKAGE_INDEX.to_string());
 
         let index_client =
-            IndexClient::from_index_and_user_version(index, env!("CARGO_PKG_VERSION")).await?;
+            IndexClient::from_index_and_user_version(config.index, env!("CARGO_PKG_VERSION"))
+                .await?;
 
         info!("Fetching package metadata for package {}.", package.bold());
         let package_metadata = index_client.get_package(package).await?;
@@ -33,7 +30,10 @@ impl Install {
         let release_id = release.id;
         info!(
             "Latest release is {} {}",
-            release.name.unwrap_or_else(|| "unspecified".to_string()).bold(),
+            release
+                .name
+                .unwrap_or_else(|| "unspecified".to_string())
+                .bold(),
             format!("(release ID: {release_id})").black().bold()
         );
 
