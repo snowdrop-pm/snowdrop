@@ -30,8 +30,4 @@ pub enum IndexClientError {
 
     #[error("Failed to parse protocol version")]
     ProtocolVersionParseError(#[from] ParseIntError),
-
-    #[error("No GitHub PAT specified")]
-    #[diagnostic(help("Run `snowflake auth` to set this up"))]
-    NoPat,
 }

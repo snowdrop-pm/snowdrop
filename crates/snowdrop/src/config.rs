@@ -1,5 +1,7 @@
-use miette::{IntoDiagnostic, Result, WrapErr};
+use miette::{Diagnostic, IntoDiagnostic, Result, WrapErr};
+use secrecy::SecretString;
 use serde::Deserialize;
+use thiserror::Error;
 
 use crate::{defaults::default_package_index, dirs::get_project_dirs};
 
@@ -31,5 +33,22 @@ pub struct Config {
     pub index: String,
 
     /// The GitHub PAT.
-    pub pat: Option<String>,
+    pub pat: Option<SecretString>,
+}
+
+#[derive(Error, Diagnostic, Debug)]
+pub enum ConfigError {
+    #[error("No GitHub PAT specified")]
+    #[diagnostic(help("Run `snowflake auth` to set this up"))]
+    NoPat,
+}
+
+impl Config {
+    // TODO: Find better way to get PAT
+    pub const fn get_pat(&self) -> Result<&SecretString, ConfigError> {
+        let Some(ref pat) = self.pat else {
+            return Err(ConfigError::NoPat)
+        };
+        Ok(pat)
+    }
 }

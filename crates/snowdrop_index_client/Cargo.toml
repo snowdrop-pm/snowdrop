@@ -2,7 +2,7 @@
 name = "snowdrop_index_client"
 description = "The Snowdrop index client"
 repository = "https://github.com/snowdroppm/snowdrop/tree/main/crates/snowdrop_index_client"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2021"
 license = "Apache-2.0"
 

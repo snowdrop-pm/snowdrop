@@ -41,3 +41,9 @@ impl AssetPicker<'_> {
         todo!()
     }
 }
+
+impl Default for AssetPicker<'_> {
+    fn default() -> Self {
+        Self::new()
+    }
+}

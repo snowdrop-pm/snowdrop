@@ -3,7 +3,7 @@ use colored::Colorize;
 use dialoguer::Confirm;
 use index_client::IndexClient;
 use log::{debug, info};
-use miette::{IntoDiagnostic, Report, Result};
+use miette::{IntoDiagnostic, miette, Result};
 
 use crate::{config::get_config, defaults::theme};
 
@@ -14,9 +14,8 @@ impl Install {
         let config = get_config()?;
         let picker = AssetPicker::new();
 
-        let mut index_client =
-            IndexClient::from_index_and_user_version(config.index, env!("CARGO_PKG_VERSION")).await?;
-        let index_client = index_client.with_pat(config.pat);
+        let pat = config.get_pat()?;
+        let index_client = IndexClient::new(&config.index, env!("CARGO_PKG_VERSION"), pat.clone()).await?;
 
         info!("Fetching package metadata for package {}.", package.bold());
         let package_metadata = index_client.get_package(package).await?;
@@ -34,7 +33,7 @@ impl Install {
             .into_diagnostic()?;
 
         if !should_install {
-            return Err(Report::msg("User aborted operation"));
+            return Err(miette!("User aborted operation"));
         }
 
         dbg!(

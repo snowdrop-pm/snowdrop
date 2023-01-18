@@ -12,8 +12,9 @@ pub struct Search;
 impl Search {
     pub async fn execute(query: String) -> Result<()> {
         let config = get_config()?;
+        let pat = config.get_pat()?;
 
-        let index_client = IndexClient::from_index_and_user_version(config.index, env!("CARGO_PKG_VERSION")).await?;
+        let index_client = IndexClient::new(&config.index, env!("CARGO_PKG_VERSION"), pat.clone()).await?;
         let names = index_client.get_names().await?;
         let names_vec = names.iter().map(|name| name.as_str()).collect::<Vec<&str>>();
         let raw_fuzzy_results = fuzzy_search_best_n(&query, names_vec.as_slice(), 5);

@@ -1,5 +1,5 @@
 use log::debug;
-use miette::Result;
+use miette::{Result};
 use reqwest::{Client, StatusCode};
 use secrecy::SecretString;
 
@@ -17,7 +17,7 @@ pub struct IndexClient {
 }
 
 impl IndexClient {
-    pub async fn new(index: String, user_version: &str, pat: SecretString) -> Result<Self, IndexClientError> {
+    pub async fn new(index: &String, user_version: &str, pat: SecretString) -> Result<Self, IndexClientError> {
         let Ok(client) = Client::builder()
             .user_agent(format!(
                 "SnowdropIndexClient/{} SnowdropCLI/{user_version}",
@@ -44,7 +44,7 @@ impl IndexClient {
             ));
         }
 
-        Ok(Self { client, index, pat })
+        Ok(Self { client, index: index.to_string(), pat })
     }
 
     pub async fn get_package(&self, name: &str) -> Result<PackageMetadata, IndexClientError> {
