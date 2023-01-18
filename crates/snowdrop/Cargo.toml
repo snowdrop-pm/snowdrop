@@ -23,9 +23,10 @@ serde = { version = "1.0.152", features = ["derive"] }
 tokio = { version = "1.23.0", default-features = false, features = [
     "rt-multi-thread",
     "macros",
-    "fs"
+    "fs",
 ] }
 toml = "0.5.10"
 dialoguer = "0.10.3"
 regex = "1.7.1"
 rust-fuzzy-search = "0.1.1"
+asset_picker = { version = "0.1.0", package = "snowdrop_asset_picker", path = "../snowdrop_asset_picker" }

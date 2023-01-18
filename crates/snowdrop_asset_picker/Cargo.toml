@@ -1,0 +1,14 @@
+[package]
+name = "snowdrop_asset_picker"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+current_platform = "0.2.0"
+globset = "0.4.10"
+log = "0.4.17"
+maplit = "1.0.2"
+miette = "5.5.0"
+octocrab = "0.18.1"

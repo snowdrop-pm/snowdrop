@@ -136,6 +136,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "bstr"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b45ea9b00a7b3f2988e9a65ad3917e62123c38dba709b666506207be96d1790b"
+dependencies = [
+ "memchr",
+ "serde",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -305,6 +315,12 @@ dependencies = [
  "generic-array",
  "typenum",
 ]
+
+[[package]]
+name = "current_platform"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a74858bcfe44b22016cb49337d7b6f04618c58e5dbfdef61b06b8c434324a0bc"
 
 [[package]]
 name = "cxx"
@@ -574,6 +590,19 @@ name = "gimli"
 version = "0.27.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dec7af912d60cdbd3677c1af9352ebae6fb8394d165568a2234df0fa00f87793"
+
+[[package]]
+name = "globset"
+version = "0.4.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "029d74589adefde59de1a0c4f4732695c32805624aec7b68d91503d4dba79afc"
+dependencies = [
+ "aho-corasick",
+ "bstr",
+ "fnv",
+ "log",
+ "regex",
+]
 
 [[package]]
 name = "h2"
@@ -895,6 +924,12 @@ checksum = "abb12e687cfb44aa40f41fc3978ef76448f9b6038cad6aef4259d3c095a2382e"
 dependencies = [
  "cfg-if",
 ]
+
+[[package]]
+name = "maplit"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3e2e65a1a2e43cfcb47a895c4c8b10d1f4a61097f9f254f183aee60cad9c651d"
 
 [[package]]
 name = "matches"
@@ -1607,10 +1642,42 @@ dependencies = [
  "reqwest",
  "rust-fuzzy-search",
  "serde",
+ "snowdrop_asset_picker",
  "snowdrop_index_client",
  "styled_env_logger 0.1.1",
  "tokio",
  "toml",
+]
+
+[[package]]
+name = "snowdrop_asset_picker"
+version = "0.1.0"
+dependencies = [
+ "current_platform",
+ "globset",
+ "log",
+ "maplit",
+ "miette",
+ "octocrab",
+]
+
+[[package]]
+name = "snowdrop_config"
+version = "0.1.0"
+dependencies = [
+ "config",
+ "miette",
+ "serde",
+ "snowdrop_dirs",
+]
+
+[[package]]
+name = "snowdrop_dirs"
+version = "0.1.0"
+dependencies = [
+ "directories",
+ "miette",
+ "once_cell",
 ]
 
 [[package]]

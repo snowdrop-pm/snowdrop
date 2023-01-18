@@ -1,0 +1,12 @@
+[package]
+name = "snowdrop_config"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+config = "0.13.3"
+miette = "5.5.0"
+serde = { version = "1.0.152", features = ["derive"] }
+snowdrop_dirs = { version = "0.1", path = "../snowdrop_dirs" }

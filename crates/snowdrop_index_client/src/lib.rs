@@ -7,7 +7,7 @@ use reqwest::{Client, StatusCode};
 use serde::Deserialize;
 use thiserror::Error;
 
-pub const CURRENT_PROTOCOL_VERSION: u8 = 2;
+pub const CURRENT_PROTOCOL_VERSION: u8 = 3;
 
 pub struct IndexClient {
     client: Client,
@@ -62,9 +62,9 @@ impl IndexClient {
             .send()
             .await?
             .text()
-            .await?;
-        debug!("Protocol version TEXT returned: {proto_version}");
-        let proto_version = "2".parse()?;
+            .await?
+            .trim()
+            .parse()?;
         debug!("Parsed proto version: {proto_version}");
 
         if proto_version != CURRENT_PROTOCOL_VERSION {
@@ -138,6 +138,7 @@ pub struct PackageMetadata {
     pub name: String,
     pub pretty_name: String,
     pub repo: [String; 2],
+    pub naming_scheme: String,
     pat: Option<String>,
 }
 
