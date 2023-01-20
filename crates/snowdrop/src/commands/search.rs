@@ -8,14 +8,14 @@ use crate::config::get_config;
 pub struct Search;
 
 impl Search {
-    pub async fn execute(query: String, minimum_score: &f32) -> Result<()> {
+    pub async fn execute(query: String, minimum_score: &f32, max_search_count: usize) -> Result<()> {
         let config = get_config()?;
         let pat = config.get_pat()?;
 
         let index_client = IndexClient::new(&config.index, env!("CARGO_PKG_VERSION"), pat.clone()).await?;
         let names = index_client.get_names().await?;
         let names_vec = names.iter().map(|name| name.as_str()).collect::<Vec<&str>>();
-        let raw_fuzzy_results = fuzzy_search_best_n(&query, names_vec.as_slice(), 5);
+        let raw_fuzzy_results = fuzzy_search_best_n(&query, names_vec.as_slice(), max_search_count);
         let matches: Vec<&(&str, f32)> = raw_fuzzy_results
             .iter()
             .filter(|(_, score)| score >= minimum_score)

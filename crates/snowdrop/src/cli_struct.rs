@@ -34,6 +34,10 @@ pub enum Command {
         /// The minimum score to use when doing a fuzzy search
         #[clap(long, default_value_t = 0.7)]
         min_score: f32,
+
+        /// The **maximum** amount of searches that will be displayed
+        #[clap(long, default_value_t = 5)]
+        max_count: usize,
     },
 }
 
@@ -46,7 +50,8 @@ impl Command {
             Self::Search {
                 query,
                 min_score: minimum_score,
-            } => search::Search::execute(query.to_string(), minimum_score).await,
+                max_count,
+            } => search::Search::execute(query.to_string(), minimum_score, *max_count).await,
         }
     }
 }
