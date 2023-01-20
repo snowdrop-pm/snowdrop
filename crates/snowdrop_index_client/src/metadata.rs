@@ -20,7 +20,7 @@ impl PackageMetadata {
         };
         let [owner, repo] = &self.repo;
 
-        Ok(octocrab(&pat)?.repos(owner, repo).releases().get_latest().await?)
+        Ok(octocrab(pat)?.repos(owner, repo).releases().get_latest().await?)
     }
 }
 

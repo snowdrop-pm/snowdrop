@@ -33,5 +33,5 @@ pub enum IndexClientError {
 
     #[error("No GitHub PAT set")]
     #[diagnostic(help("Run `snowdrop auth` to set this up"))]
-    NoPat
+    NoPat,
 }

@@ -1,5 +1,5 @@
 use log::debug;
-use miette::{Result};
+use miette::Result;
 use reqwest::{Client, StatusCode};
 use secrecy::SecretString;
 
@@ -44,7 +44,11 @@ impl IndexClient {
             ));
         }
 
-        Ok(Self { client, index: index.to_string(), pat })
+        Ok(Self {
+            client,
+            index: index.to_string(),
+            pat,
+        })
     }
 
     pub async fn get_package(&self, name: &str) -> Result<PackageMetadata, IndexClientError> {

@@ -30,6 +30,10 @@ pub enum Command {
     Search {
         /// The query you want to make.
         query: String,
+
+        /// The minimum score to use when doing a fuzzy search
+        #[clap(long, default_value_t = 0.7)]
+        min_score: f32,
     },
 }
 
@@ -39,7 +43,10 @@ impl Command {
         match self {
             Self::Install { dry_run, package } => install::Install::execute(package, dry_run).await,
             Self::Auth => auth::Auth::execute().await,
-            Self::Search { query } => search::Search::execute(query.to_string()).await,
+            Self::Search {
+                query,
+                min_score: minimum_score,
+            } => search::Search::execute(query.to_string(), minimum_score).await,
         }
     }
 }

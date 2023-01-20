@@ -5,12 +5,10 @@ use rust_fuzzy_search::fuzzy_search_best_n;
 
 use crate::config::get_config;
 
-const MINIMUM_SCORE: f32 = 0.7;
-
 pub struct Search;
 
 impl Search {
-    pub async fn execute(query: String) -> Result<()> {
+    pub async fn execute(query: String, minimum_score: &f32) -> Result<()> {
         let config = get_config()?;
         let pat = config.get_pat()?;
 
@@ -20,7 +18,7 @@ impl Search {
         let raw_fuzzy_results = fuzzy_search_best_n(&query, names_vec.as_slice(), 5);
         let matches: Vec<&(&str, f32)> = raw_fuzzy_results
             .iter()
-            .filter(|(_, score)| score > &MINIMUM_SCORE)
+            .filter(|(_, score)| score >= minimum_score)
             .collect();
 
         if matches.is_empty() {
