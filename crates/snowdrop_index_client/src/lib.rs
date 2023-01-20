@@ -3,8 +3,8 @@ use miette::{Result};
 use reqwest::{Client, StatusCode};
 use secrecy::SecretString;
 
-mod error;
-mod metadata;
+pub mod error;
+pub mod metadata;
 use error::IndexClientError;
 use metadata::PackageMetadata;
 
@@ -68,7 +68,7 @@ impl IndexClient {
         }
 
         let mut metadata = http_response.json::<PackageMetadata>().await?;
-        metadata.pat = self.pat.clone();
+        metadata.pat = Some(self.pat.clone());
         Ok(metadata)
     }
 

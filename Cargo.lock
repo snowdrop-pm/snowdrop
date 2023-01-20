@@ -1634,34 +1634,25 @@ dependencies = [
  "clap",
  "colored",
  "config",
+ "current_platform",
  "dialoguer",
  "directories",
+ "globset",
  "log",
+ "maplit",
  "miette",
+ "octocrab",
  "once_cell",
  "regex",
  "reqwest",
  "rust-fuzzy-search",
  "secrecy",
  "serde",
- "snowdrop_asset_picker",
  "snowdrop_index_client",
  "styled_env_logger 0.1.1",
  "thiserror",
  "tokio",
  "toml",
-]
-
-[[package]]
-name = "snowdrop_asset_picker"
-version = "0.1.0"
-dependencies = [
- "current_platform",
- "globset",
- "log",
- "maplit",
- "miette",
- "octocrab",
 ]
 
 [[package]]

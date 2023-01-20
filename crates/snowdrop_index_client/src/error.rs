@@ -30,4 +30,8 @@ pub enum IndexClientError {
 
     #[error("Failed to parse protocol version")]
     ProtocolVersionParseError(#[from] ParseIntError),
+
+    #[error("No GitHub PAT set")]
+    #[diagnostic(help("Run `snowdrop auth` to set this up"))]
+    NoPat
 }

@@ -10,14 +10,17 @@ pub struct PackageMetadata {
     pub pretty_name: String,
     pub repo: [String; 2],
     pub naming_scheme: String,
-    pub(crate) pat: SecretString,
+    pub(crate) pat: Option<SecretString>,
 }
 
 impl PackageMetadata {
     pub async fn get_latest_release(&self) -> Result<Release, IndexClientError> {
+        let Some(ref pat) = self.pat else {
+            return Err(IndexClientError::NoPat)
+        };
         let [owner, repo] = &self.repo;
 
-        Ok(octocrab(&self.pat)?.repos(owner, repo).releases().get_latest().await?)
+        Ok(octocrab(&pat)?.repos(owner, repo).releases().get_latest().await?)
     }
 }
 

@@ -1,10 +1,11 @@
-use asset_picker::AssetPicker;
 use colored::Colorize;
 use dialoguer::Confirm;
 use index_client::IndexClient;
 use log::{debug, info};
 use miette::{IntoDiagnostic, miette, Result};
 
+mod picker;
+use picker::AssetPicker;
 use crate::{config::get_config, defaults::theme};
 
 pub struct Install;

@@ -1,7 +1,7 @@
-use miette::{Diagnostic, IntoDiagnostic, Result, WrapErr};
+use index_client::error::IndexClientError;
+use miette::{IntoDiagnostic, Result, WrapErr};
 use secrecy::SecretString;
 use serde::Deserialize;
-use thiserror::Error;
 
 use crate::{defaults::default_package_index, dirs::get_project_dirs};
 
@@ -36,18 +36,13 @@ pub struct Config {
     pub pat: Option<SecretString>,
 }
 
-#[derive(Error, Diagnostic, Debug)]
-pub enum ConfigError {
-    #[error("No GitHub PAT specified")]
-    #[diagnostic(help("Run `snowflake auth` to set this up"))]
-    NoPat,
-}
-
+type PatError = IndexClientError;
 impl Config {
     // TODO: Find better way to get PAT
-    pub const fn get_pat(&self) -> Result<&SecretString, ConfigError> {
+    pub const fn get_pat(&self) -> Result<&SecretString, PatError> {
         let Some(ref pat) = self.pat else {
-            return Err(ConfigError::NoPat)
+            // FIXME: don't return index client errors for config issues
+            return Err(PatError::NoPat)
         };
         Ok(pat)
     }
